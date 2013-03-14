@@ -1,1 +1,4 @@
 /assets/
+private.xml
+*.properties
+/protected/runtime/application.log
