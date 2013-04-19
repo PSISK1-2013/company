@@ -1,22 +1,22 @@
 <?php
 
 /**
- * This is the model class for table "account".
+ * This is the model class for table "account_data".
  *
- * The followings are the available columns in table 'account':
+ * The followings are the available columns in table 'account_data':
+ * @property integer $account_data_id
  * @property integer $account_id
- * @property integer $type
- * @property string $login
- * @property string $password
+ * @property string $name
+ * @property string $surname
+ * @property integer $age
+ * @property integer $married
  */
-class Account extends CActiveRecord {
-
-    public $repeatPassword;
+class AccountData extends CActiveRecord {
 
     /**
      * Returns the static model of the specified AR class.
      * @param string $className active record class name.
-     * @return Account the static model class
+     * @return AccountData the static model class
      */
     public static function model($className = __CLASS__) {
         return parent::model($className);
@@ -26,25 +26,9 @@ class Account extends CActiveRecord {
      * @return string the associated database table name
      */
     public function tableName() {
-        return 'account';
+        return 'account_data';
     }
-    
-    /**
-     * Function does make additional checks or filters before saving data
-     * @return parent::beforeSave()
-     */
-    public function beforeSave() {
-        //MD5 password field or remove from saving if not required
-        if(!empty($this->password)){
-            $pass = md5($this->password);
-            $this->password = $pass;
-        } else {
-            unset($this->password);
-        }
-        
-        return parent::beforeSave();
-    }
-    
+
     /**
      * @return array validation rules for model attributes.
      */
@@ -52,17 +36,12 @@ class Account extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('type, login, password', 'required', 'on' => 'insert'),
-            array('type, login', 'required', 'on' => 'update'),
-            array('type', 'numerical', 'integerOnly' => true),
-            array('login', 'length', 'max' => 30),
-            array('password', 'length', 'max' => 100),
-            array('password', 'length', 'min' => 3),
-            array('repeatPassword', 'length', 'max' => 100),
-            array('repeatPassword', 'compare', 'compareAttribute'=>'password', 'message'=>"Hasła nie są identyczne"),
+            array('name, surname, age, married', 'required'),
+            array('account_id, age, married', 'numerical', 'integerOnly' => true),
+            array('name, surname', 'length', 'max' => 40),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('account_id, type, login, password', 'safe', 'on' => 'search'),
+            array('account_data_id, account_id, name, surname, age, married', 'safe', 'on' => 'search'),
         );
     }
 
@@ -81,11 +60,12 @@ class Account extends CActiveRecord {
      */
     public function attributeLabels() {
         return array(
-            'account_id' => 'ID Konta',
-            'type' => 'Stanowisko',
-            'login' => 'Login',
-            'password' => 'Hasło',
-            'repeatPassword' => 'Powtórz hasło'
+            'account_data_id' => 'Id danych',
+            'account_id' => 'Id konta',
+            'name' => 'Imię',
+            'surname' => 'Nazwisko',
+            'age' => 'Wiek',
+            'married' => 'Żonaty/ta',
         );
     }
 
@@ -99,10 +79,12 @@ class Account extends CActiveRecord {
 
         $criteria = new CDbCriteria;
 
+        $criteria->compare('account_data_id', $this->account_data_id);
         $criteria->compare('account_id', $this->account_id);
-        $criteria->compare('type', $this->type);
-        $criteria->compare('login', $this->login, true);
-        $criteria->compare('password', $this->password, true);
+        $criteria->compare('name', $this->name, true);
+        $criteria->compare('surname', $this->surname, true);
+        $criteria->compare('age', $this->age);
+        $criteria->compare('married', $this->married);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,

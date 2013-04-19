@@ -5,7 +5,7 @@
  *
  * The followings are the available columns in table 'account_type':
  * @property string $account_type_id
- * @property string $Name
+ * @property string $name
  */
 class AccountType extends CActiveRecord {
 
@@ -55,8 +55,8 @@ class AccountType extends CActiveRecord {
      */
     public function attributeLabels() {
         return array(
-            'account_type_id' => 'Typ Konta',
-            'name' => 'Nazwa',
+            'account_type_id' => 'Id stanowiska',
+            'name' => 'Stanowisko',
         );
     }
 

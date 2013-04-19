@@ -26,7 +26,7 @@ class AccountController extends Controller {
     public function accessRules() {
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('index', 'view'),
+                'actions' => array('index'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -44,34 +44,48 @@ class AccountController extends Controller {
     }
 
     /**
-     * Displays a particular model.
-     * @param integer $id the ID of the model to be displayed
-     */
-    public function actionView($id) {
-        $this->render('view', array(
-            'model' => $this->loadModel($id),
-        ));
-    }
-
-    /**
      * Creates a new model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
         $model = new Account;
-
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
+        $account = $model->getRelated('account_data');
+        
+        if (!$account) {
+            $account = new AccountData;
+            $account->account_id = $model->account_id;
+        }
 
         if (isset($_POST['Account'])) {
-            $model->attributes = $_POST['Account'];
-            if ($model->save())
-                $this->redirect(array('view', 'id' => $model->account_id));
+            if ($this->saveModels($model, $account)) {
+                $this->redirect(array('update', 'id' => $model->account_id));
+            }
         }
 
         $this->render('create', array(
             'model' => $model,
+            'account' => $account
         ));
+    }
+
+    /**
+     * Function saves Account and it's related data
+     * @param Account $model
+     * @return boolean
+     */
+    protected function saveModels(Account &$model, AccountData &$account) {
+        $model->attributes = $_POST['Account'];
+        $account->attributes = $_POST['AccountData'];
+
+        if ($model->validate() && $account->validate()) {
+            if ($model->save()) {
+                $account->account_id = $model->account_id;
+                $account->save();
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -81,18 +95,21 @@ class AccountController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
-
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
+        $account = $model->getRelated('account_data');
+        if (!$account) {
+            $account = new AccountData;
+            $account->account_id = $model->account_id;
+        }
 
         if (isset($_POST['Account'])) {
-            $model->attributes = $_POST['Account'];
-            if ($model->save())
-                $this->redirect(array('view', 'id' => $model->account_id));
+            if ($this->saveModels($model, $account)) {
+                $this->redirect(array('update', 'id' => $model->account_id));
+            }
         }
 
         $this->render('update', array(
             'model' => $model,
+            'account' => $account
         ));
     }
 
@@ -113,7 +130,15 @@ class AccountController extends Controller {
      * Lists all models.
      */
     public function actionIndex() {
-        $dataProvider = new CActiveDataProvider('Account');
+        $dataProvider = new CActiveDataProvider('Account', array(
+            'criteria' => array(
+                'with' => array(
+                    'account_data',
+                    'account_type'
+                ),
+                'together' => true
+            )
+        ));
         $this->render('index', array(
             'dataProvider' => $dataProvider,
         ));
@@ -145,17 +170,6 @@ class AccountController extends Controller {
         if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;
-    }
-
-    /**
-     * Performs the AJAX validation.
-     * @param Account $model the model to be validated
-     */
-    protected function performAjaxValidation($model) {
-        if (isset($_POST['ajax']) && $_POST['ajax'] === 'account-form') {
-            echo CActiveForm::validate($model);
-            Yii::app()->end();
-        }
     }
 
 }

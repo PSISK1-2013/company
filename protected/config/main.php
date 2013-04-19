@@ -14,6 +14,8 @@ return array(
     'import' => array(
         'application.models.*',
         'application.components.*',
+        'application.modules.users.models.*',
+        'application.modules.users.components.*',
     ),
     'modules' => array(
         // uncomment the following to enable the Gii tool
@@ -23,6 +25,11 @@ return array(
             // If removed, Gii defaults to localhost only. Edit carefully to taste.
             'ipFilters' => array('127.0.0.1', '::1'),
         ),
+        'users',
+        'logistics',
+        'storage',
+        'advertisements',
+        ''
     ),
     // application components
     'components' => array(

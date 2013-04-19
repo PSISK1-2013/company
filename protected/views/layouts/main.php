@@ -30,7 +30,7 @@
                 <?php
                 $this->widget('zii.widgets.CMenu', array(
                     'items' => array(
-                        array('label' => 'Zarządzanie kontami', 'url' => array('/account'), 'visible' => !Yii::app()->user->isGuest),
+                        array('label' => 'Zarządzanie kontami', 'url' => array('/users/account'), 'visible' => !Yii::app()->user->isGuest),
                         array('label' => 'Zaloguj', 'url' => array('/site/login'), 'visible' => Yii::app()->user->isGuest),
                         array('label' => 'Wyloguj (' . Yii::app()->user->name . ')', 'url' => array('/site/logout'), 'visible' => !Yii::app()->user->isGuest)
                     ),

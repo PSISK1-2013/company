@@ -22,7 +22,7 @@ $this->breadcrumbs=array(
 	),
 )); ?>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
+	<p class="note">Pola z <span class="required">*</span>są wymagane.</p>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'username'); ?>
